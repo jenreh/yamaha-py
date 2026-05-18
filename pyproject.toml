@@ -93,6 +93,11 @@ filename = "README.md"
 search = '![Version](https://img.shields.io/badge/version-{current_version}-blue)'
 replace = '![Version](https://img.shields.io/badge/version-{new_version}-blue)'
 
+[[tool.bumpversion.files]]
+filename = "yamactl/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
 [tool.ruff]
 cache-dir = ".cache/ruff"
 indent-width = 4

@@ -15,7 +15,7 @@ from yamactl.core.config import (
     save_profile,
     set_default_profile,
 )
-from yamactl.core.models import ProtocolName, ReceiverConfig, ZoneName
+from yamactl.core.models import ReceiverConfig
 
 app = typer.Typer(no_args_is_help=True)
 
@@ -24,11 +24,19 @@ app = typer.Typer(no_args_is_help=True)
 def config_init(
     name: str = typer.Option(..., "--name", "-n", help="Profile name."),
     host: str = typer.Option(..., "--host", "-h", help="Receiver IP address."),
-    protocol: str = typer.Option("ynca", "--protocol", help="Protocol: ynca or http_xml."),
-    zone: str = typer.Option("main", "--zone", "-z", help="Default zone: main or zone2."),
-    timeout: float = typer.Option(3.0, "--timeout", help="Connection timeout in seconds."),
+    protocol: str = typer.Option(
+        "ynca", "--protocol", help="Protocol: ynca or http_xml."
+    ),
+    zone: str = typer.Option(
+        "main", "--zone", "-z", help="Default zone: main or zone2."
+    ),
+    timeout: float = typer.Option(
+        3.0, "--timeout", help="Connection timeout in seconds."
+    ),
     retries: int = typer.Option(1, "--retries", help="Number of retries on timeout."),
-    set_default: bool = typer.Option(True, "--default/--no-default", help="Set as default profile."),
+    set_default: bool = typer.Option(
+        True, "--default/--no-default", help="Set as default profile."
+    ),
 ) -> None:
     """Create or update a receiver profile."""
     if protocol not in ("ynca", "http_xml"):

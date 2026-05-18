@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 import typer
 
 from yamactl.cli._common import ProfileOpt, ZoneOpt, make_service
@@ -20,8 +18,12 @@ app = typer.Typer(no_args_is_help=True)
 
 @app.command("mode")
 def sound_mode(
-    mode: Optional[str] = typer.Argument(default=None, help='DSP mode name (e.g. "Hall in Munich").'),
-    list_modes: bool = typer.Option(False, "--list", "-l", help="List available DSP modes."),
+    mode: str | None = typer.Argument(
+        default=None, help='DSP mode name (e.g. "Hall in Munich").'
+    ),
+    list_modes: bool = typer.Option(
+        False, "--list", "-l", help="List available DSP modes."
+    ),
     profile: ProfileOpt = None,
     zone: ZoneOpt = None,
 ) -> None:
@@ -31,7 +33,9 @@ def sound_mode(
             typer.echo(m)
         return
     if mode is None:
-        typer.echo("Error: provide a mode name or use --list to see available modes.", err=True)
+        typer.echo(
+            "Error: provide a mode name or use --list to see available modes.", err=True
+        )
         raise typer.Exit(2)
     make_service(profile, zone).set_dsp_mode(mode)
     typer.echo(dsp_mode_confirmation(mode))
@@ -68,13 +72,15 @@ def sound_sleep(
     zone: ZoneOpt = None,
 ) -> None:
     """Set or clear the sleep timer."""
-    minutes: Optional[int]
+    minutes: int | None
     if value.lower() == "off":
         minutes = None
     elif value.isdigit():
         minutes = int(value)
     else:
-        typer.echo(f"Error: sleep value must be a number or 'off', got '{value}'", err=True)
+        typer.echo(
+            f"Error: sleep value must be a number or 'off', got '{value}'", err=True
+        )
         raise typer.Exit(2)
     make_service(profile, zone).set_sleep(minutes)
     typer.echo(sleep_confirmation(value))

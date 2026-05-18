@@ -28,7 +28,7 @@ includes:
 silent: true
 
 vars:
-  PROJECT: app
+  PROJECT: yamactl
 
 tasks:
   default:

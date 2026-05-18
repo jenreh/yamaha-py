@@ -22,7 +22,7 @@ def raw_ynca(
 
 @app.command("xml")
 def raw_xml(
-    xml: str = typer.Argument(help='Full YAMAHA_AV XML envelope to send.'),
+    xml: str = typer.Argument(help="Full YAMAHA_AV XML envelope to send."),
     profile: ProfileOpt = None,
     zone: ZoneOpt = None,
 ) -> None:

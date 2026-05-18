@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import yaml
 
@@ -73,7 +73,7 @@ def list_profiles() -> dict[str, Any]:
         data = _load_raw()
     except ConfigError:
         return {}
-    return data.get("profiles", {})
+    return cast(dict[str, Any], data.get("profiles", {}))
 
 
 def get_default_profile() -> str | None:
@@ -81,7 +81,7 @@ def get_default_profile() -> str | None:
         data = _load_raw()
     except ConfigError:
         return None
-    return data.get("default_profile")
+    return cast("str | None", data.get("default_profile"))
 
 
 def set_default_profile(name: str) -> None:

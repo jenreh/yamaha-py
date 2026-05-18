@@ -62,7 +62,7 @@ def _http_probe(host: str) -> tuple[bool, str | None]:
         if response.status_code == 200 and "YAMAHA" in response.text.upper():
             model = _extract_model(response.text)
             return True, model
-    except Exception:
+    except Exception:  # noqa: S110
         pass
     return False, None
 
@@ -71,7 +71,7 @@ def _extract_model(xml_text: str) -> str | None:
     import xml.etree.ElementTree as ET  # noqa: PLC0415
 
     try:
-        root = ET.fromstring(xml_text)
+        root = ET.fromstring(xml_text)  # noqa: S314
         for tag in ("Model_Name", "modelName", "friendlyName"):
             el = root.find(f".//{tag}")
             if el is not None and el.text:

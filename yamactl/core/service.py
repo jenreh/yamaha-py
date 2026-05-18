@@ -3,16 +3,23 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
+from typing import TypeVar
+
+_T = TypeVar("_T")
 
 from yamactl.core.config import load_profile
 from yamactl.core.errors import CommandTimeout, ReceiverUnavailable, YamaCtlError
 from yamactl.core.models import (
-    PowerState,
-    ReceiverConfig,
-    ReceiverStatus,
     VOLUME_MAX,
     VOLUME_MIN,
     VOLUME_STEP,
+    NetRadioListInfo,
+    NetRadioStatus,
+    PowerState,
+    ReceiverConfig,
+    ReceiverStatus,
+    TunerStatus,
     ZoneName,
 )
 from yamactl.core.ports import ReceiverProtocol
@@ -27,7 +34,7 @@ class ReceiverService:
         cls,
         profile: str | None = None,
         zone_override: ZoneName | None = None,
-    ) -> "ReceiverService":
+    ) -> ReceiverService:
         cfg = load_profile(profile)
         if zone_override is not None:
             cfg = cfg.model_copy(update={"zone": zone_override})
@@ -51,7 +58,7 @@ class ReceiverService:
             timeout=self._config.timeout_seconds,
         )
 
-    def _run(self, fn):  # type: ignore[no-untyped-def]
+    def _run(self, fn: Callable[[ReceiverProtocol], _T]) -> _T:
         """Execute fn(protocol) with retry logic."""
         last_exc: Exception | None = None
         for attempt in range(max(1, self._config.retries)):
@@ -138,3 +145,51 @@ class ReceiverService:
 
     def send_raw_xml(self, xml: str) -> str:
         return self._run(lambda p: p.send_raw_xml(xml))
+
+    def get_tuner_status(self) -> TunerStatus:
+        return self._run(lambda p: p.get_tuner_status())
+
+    def set_tuner_band(self, band: str) -> None:
+        self._run(lambda p: p.set_tuner_band(band))
+
+    def set_tuner_fm_freq(self, mhz: float) -> None:
+        self._run(lambda p: p.set_tuner_fm_freq(mhz))
+
+    def set_tuner_am_freq(self, khz: int) -> None:
+        self._run(lambda p: p.set_tuner_am_freq(khz))
+
+    def set_tuner_preset(self, preset_num: int) -> None:
+        self._run(lambda p: p.set_tuner_preset(preset_num))
+
+    def get_netradio_status(self) -> NetRadioStatus:
+        return self._run(lambda p: p.get_netradio_status())
+
+    def set_netradio_playback(self, action: str) -> None:
+        self._run(lambda p: p.set_netradio_playback(action))
+
+    def set_netradio_preset(self, preset_num: int) -> None:
+        self._run(lambda p: p.set_netradio_preset(preset_num))
+
+    def get_netradio_list(self) -> NetRadioListInfo:
+        return self._run(lambda p: p.get_netradio_list())
+
+    def netradio_select(self, line: int) -> None:
+        self._run(lambda p: p.netradio_select(line))
+
+    def netradio_back(self) -> None:
+        self._run(lambda p: p.netradio_back())
+
+    def netradio_cursor(self, direction: str) -> None:
+        self._run(lambda p: p.netradio_cursor(direction))
+
+    def play_netradio_url(self, url: str, title: str = "") -> None:
+        self._run(lambda p: p.play_netradio_url(url, title))
+
+    def pause_netradio_url(self) -> None:
+        self._run(lambda p: p.pause_netradio_url())
+
+    def stop_netradio_url(self) -> None:
+        self._run(lambda p: p.stop_netradio_url())
+
+    def get_server_status(self) -> NetRadioStatus:
+        return self._run(lambda p: p.get_server_status())

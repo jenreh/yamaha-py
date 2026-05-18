@@ -36,11 +36,14 @@ def candidates_to_plain(candidates: list[DiscoveryCandidate]) -> str:
         ynca = "YNCA" if c.ynca_available else "    "
         http = "HTTP" if c.http_available else "    "
         model = c.model or "?"
-        lines.append(f"{c.host:<18} {ynca} {http}  confidence={c.confidence}  model={model}")
+        lines.append(
+            f"{c.host:<18} {ynca} {http}  confidence={c.confidence}  model={model}"
+        )
     return "\n".join(lines)
 
 
 # ── simple confirmation lines ─────────────────────────────────────────────────
+
 
 def power_confirmation(state: str) -> str:
     return f"Power: {state}"

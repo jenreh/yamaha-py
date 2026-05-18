@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+from typing import Any
 
 from yamactl.core.models import DiscoveryCandidate
 
@@ -17,7 +18,7 @@ def discover_mdns(timeout: float = 3.0) -> list[DiscoveryCandidate]:
     zc = Zeroconf()
 
     class Handler:
-        def add_service(self, zc, type_, name):  # type: ignore[no-untyped-def]
+        def add_service(self, zc: Any, type_: str, name: str) -> None:  # type: ignore[no-untyped-def]
             info = zc.get_service_info(type_, name)
             if info is None:
                 return

@@ -17,7 +17,11 @@
         <Input_Sel>HDMI1</Input_Sel>
       </Input>
       <Surround>
-        <Program_Sel>7ch Surround</Program_Sel>
+        <Program_Sel>
+          <Current>
+            <Sound_Program>7ch Surround</Sound_Program>
+          </Current>
+        </Program_Sel>
         <Straight>Off</Straight>
         <Direct>Off</Direct>
       </Surround>

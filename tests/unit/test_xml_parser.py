@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import httpx
 import pytest
 import respx
-import httpx
 
 from yamactl.core.errors import CommandTimeout, ReceiverUnavailable, UnexpectedResponse
 from yamactl.protocols.ync_http import YncHttpProtocol
@@ -19,14 +19,14 @@ def fixture(name: str) -> bytes:
     return (FIXTURES / name).read_bytes()
 
 
-@pytest.fixture()
-def proto():
+@pytest.fixture
+def proto() -> YncHttpProtocol:
     return YncHttpProtocol(host="192.168.1.100", port=80, timeout=1.0)
 
 
 class TestStatusParsing:
     @respx.mock
-    def test_parses_basic_status(self, proto):
+    def test_parses_basic_status(self, proto) -> None:
         respx.post(BASE_URL).mock(
             return_value=httpx.Response(200, content=fixture("basic_status.xml"))
         )
@@ -39,7 +39,7 @@ class TestStatusParsing:
         assert status.dsp_mode == "7ch Surround"
 
     @respx.mock
-    def test_standby_power(self, proto):
+    def test_standby_power(self, proto) -> None:
         xml = b"""<YAMAHA_AV rsp="GET" RC="0">
           <Main_Zone><Basic_Status>
             <Power_Control><Power>Standby</Power></Power_Control>
@@ -56,7 +56,7 @@ class TestStatusParsing:
 
 class TestMuteParsing:
     @respx.mock
-    def test_mute_on(self, proto):
+    def test_mute_on(self, proto) -> None:
         respx.post(BASE_URL).mock(
             return_value=httpx.Response(200, content=fixture("mute_on.xml"))
         )
@@ -64,7 +64,7 @@ class TestMuteParsing:
             assert proto.get_mute() is True
 
     @respx.mock
-    def test_mute_off(self, proto):
+    def test_mute_off(self, proto) -> None:
         xml = b'<YAMAHA_AV rsp="GET" RC="0"><Main_Zone><Volume><Mute>Off</Mute></Volume></Main_Zone></YAMAHA_AV>'
         respx.post(BASE_URL).mock(return_value=httpx.Response(200, content=xml))
         with proto:
@@ -73,7 +73,7 @@ class TestMuteParsing:
 
 class TestVolumeParsing:
     @respx.mock
-    def test_parses_volume(self, proto):
+    def test_parses_volume(self, proto) -> None:
         respx.post(BASE_URL).mock(
             return_value=httpx.Response(200, content=fixture("volume_response.xml"))
         )
@@ -82,7 +82,7 @@ class TestVolumeParsing:
         assert vol == -45.0
 
     @respx.mock
-    def test_parses_positive_volume(self, proto):
+    def test_parses_positive_volume(self, proto) -> None:
         xml = b'<YAMAHA_AV rsp="GET" RC="0"><Main_Zone><Volume><Lvl><Val>55</Val><Exp>1</Exp><Unit>dB</Unit></Lvl></Volume></Main_Zone></YAMAHA_AV>'
         respx.post(BASE_URL).mock(return_value=httpx.Response(200, content=xml))
         with proto:
@@ -92,30 +92,28 @@ class TestVolumeParsing:
 
 class TestErrorHandling:
     @respx.mock
-    def test_receiver_rc_nonzero_raises(self, proto):
+    def test_receiver_rc_nonzero_raises(self, proto) -> None:
         xml = b'<YAMAHA_AV rsp="PUT" RC="3"></YAMAHA_AV>'
         respx.post(BASE_URL).mock(return_value=httpx.Response(200, content=xml))
-        with proto:
-            with pytest.raises(UnexpectedResponse, match="RC=3"):
-                proto.set_power("on")
+        with proto, pytest.raises(UnexpectedResponse, match="RC=3"):
+            proto.set_power("on")
 
     @respx.mock
-    def test_invalid_xml_raises(self, proto):
-        respx.post(BASE_URL).mock(return_value=httpx.Response(200, content=b"not xml at all"))
-        with proto:
-            with pytest.raises(UnexpectedResponse):
-                proto.get_status()
+    def test_invalid_xml_raises(self, proto) -> None:
+        respx.post(BASE_URL).mock(
+            return_value=httpx.Response(200, content=b"not xml at all")
+        )
+        with proto, pytest.raises(UnexpectedResponse):
+            proto.get_status()
 
     @respx.mock
-    def test_connect_error_raises_receiver_unavailable(self, proto):
+    def test_connect_error_raises_receiver_unavailable(self, proto) -> None:
         respx.post(BASE_URL).mock(side_effect=httpx.ConnectError("refused"))
-        with proto:
-            with pytest.raises(ReceiverUnavailable):
-                proto.set_power("on")
+        with proto, pytest.raises(ReceiverUnavailable):
+            proto.set_power("on")
 
     @respx.mock
-    def test_timeout_raises_command_timeout(self, proto):
+    def test_timeout_raises_command_timeout(self, proto) -> None:
         respx.post(BASE_URL).mock(side_effect=httpx.TimeoutException("timeout"))
-        with proto:
-            with pytest.raises(CommandTimeout):
-                proto.set_power("on")
+        with proto, pytest.raises(CommandTimeout):
+            proto.set_power("on")

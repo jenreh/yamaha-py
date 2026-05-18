@@ -47,7 +47,7 @@ def discover_ssdp(timeout: float = 3.0) -> list[DiscoveryCandidate]:
                             http_available=True,
                         )
                     )
-            except socket.timeout:
+            except TimeoutError:
                 break
     finally:
         sock.close()

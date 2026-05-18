@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import json
-from typing import Optional
 
 import typer
 
 from yamactl.cli._common import JsonOpt, ProfileOpt, ZoneOpt, make_service
-from yamactl.output.formatters import status_to_dict, status_to_plain
+from yamactl.output.formatters import status_to_dict
 from yamactl.output.rich_ui import render_discovery, render_status
 
 
@@ -26,7 +25,7 @@ def status(
 
 
 def discover(
-    subnet: Optional[str] = typer.Option(
+    subnet: str | None = typer.Option(
         None,
         "--subnet",
         help="CIDR subnet to scan, e.g. 192.168.178.0/24. Required — no auto-scan for safety.",
