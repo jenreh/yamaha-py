@@ -1,0 +1,11 @@
+<YAMAHA_AV rsp="GET" RC="0">
+  <Main_Zone>
+    <Volume>
+      <Lvl>
+        <Val>-450</Val>
+        <Exp>1</Exp>
+        <Unit>dB</Unit>
+      </Lvl>
+    </Volume>
+  </Main_Zone>
+</YAMAHA_AV>

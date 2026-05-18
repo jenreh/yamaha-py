@@ -23,7 +23,12 @@
       "Skill(create-readme:*)",
       "Skill(writing-python-code:*)",
       "Skill(frontend-design:*)",
-    ],
-    "defaultMode": "acceptEdits"
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:github.com)",
+      "Bash(yamactl --help)",
+      "Bash(yamactl volume *)",
+      "Bash(yamactl config *)",
+      "Bash(yamactl discover *)"
+    ]
   }
 }
