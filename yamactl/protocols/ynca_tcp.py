@@ -31,7 +31,7 @@ def _parse_sleep(value: object) -> int | None:
         return None
     try:
         return int(str(value))
-    except ValueError, TypeError:
+    except (ValueError, TypeError):
         return None
 
 

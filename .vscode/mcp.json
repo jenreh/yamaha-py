@@ -1,4 +1,34 @@
 {
+    "servers": {
+        "memory": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-memory"
+            ],
+            "type": "stdio"
+        },
+        "code-reasoning": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@mettamatt/code-reasoning"
+            ],
+            "type": "stdio"
+        },
+        "duckduckgo": {
+            "command": "uvx",
+            "args": [
+                "duckduckgo-mcp-server"
+            ],
+            "type": "stdio"
+        },
+        "yamactl": {
+            "type": "stdio",
+            "command": "yamactl-mcp",
+            "args": []
+        }
+    },
     "inputs": [
         {
             "type": "promptString",
@@ -6,27 +36,5 @@
             "description": "Enter your OpenAI API Key",
             "password": true
         }
-    ],
-    "servers": {
-        "memory": {
-            "command": "npx",
-            "args": [
-                "-y",
-                "@modelcontextprotocol/server-memory"
-            ]
-        },
-        "code-reasoning": {
-            "command": "npx",
-            "args": [
-                "-y",
-                "@mettamatt/code-reasoning"
-            ]
-        },
-        "duckduckgo": {
-            "command": "uvx",
-            "args": [
-                "duckduckgo-mcp-server"
-            ]
-        },
-    }
+    ]
 }

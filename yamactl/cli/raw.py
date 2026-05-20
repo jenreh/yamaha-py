@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import typer
 
-from yamactl.cli._common import ProfileOpt, ZoneOpt, make_service
+from yamactl.cli._common import ProfileOpt, ZoneOpt, make_client
 
 app = typer.Typer(no_args_is_help=True)
 
@@ -16,7 +16,7 @@ def raw_ynca(
     zone: ZoneOpt = None,
 ) -> None:
     """Send a raw YNCA command and print the response."""
-    result = make_service(profile, zone).send_raw_ynca(command)
+    result = make_client(profile, zone).send_raw_ynca(command)
     typer.echo(result)
 
 
@@ -27,5 +27,5 @@ def raw_xml(
     zone: ZoneOpt = None,
 ) -> None:
     """Send a raw XML command and print the XML response."""
-    result = make_service(profile, zone).send_raw_xml(xml)
+    result = make_client(profile, zone).send_raw_xml(xml)
     typer.echo(result)

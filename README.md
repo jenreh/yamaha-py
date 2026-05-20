@@ -24,9 +24,9 @@
 ## Installation
 
 ```bash
-pip install yamaha-py
+pip install yamactl
 # or with uv
-uv add yamaha-py
+uv add yamactl
 ```
 
 Requires Python 3.14+.
@@ -35,8 +35,7 @@ Requires Python 3.14+.
 > For mDNS discovery, install the optional dependency:
 >
 > ```bash
-> pip install "yamaha-py[discovery]"
-> ```
+> pip install "yamactl[discovery]"
 
 ---
 
@@ -81,6 +80,55 @@ yamactl scene load 1
 
 ---
 
+## Python SDK
+
+`YamaCtlClient` is the public API — use it to integrate receiver control into your own scripts or applications.
+
+```python
+from yamactl.client import YamaCtlClient
+
+# Uses the default profile from ~/.config/yamaha-local/config.yaml
+with YamaCtlClient.from_profile() as client:
+    # Read status
+    status = client.get_status()
+    print(status.power, status.input, status.volume_db)
+
+    # Power & volume
+    client.set_power("on")
+    client.set_volume(-35.0)
+    client.volume_up(steps=2)      # +1.0 dB
+
+    # Mute
+    client.set_mute(False)
+    new_state = client.toggle_mute()
+
+    # Input & DSP
+    client.set_input("HDMI1")
+    client.set_dsp_mode("5ch Stereo")
+    client.load_scene(1)
+
+    # Tuner
+    client.set_tuner_band("FM")
+    client.set_tuner_fm_freq(89.5)
+
+    # Net Radio
+    client.play_netradio_url(
+        "http://wdr-wdr3-live.icecastssl.wdr.de/wdr/wdr3/live/128/stream.mp3",
+        title="WDR3",
+    )
+```
+
+Use a named profile or override the zone:
+
+```python
+with YamaCtlClient.from_profile(profile="bedroom", zone_override="zone2") as client:
+    client.set_volume(-40.0)
+```
+
+All methods raise subclasses of `YamaCtlError` on failure (see [Exit codes](#exit-codes) for the mapping).
+
+---
+
 ## CLI reference
 
 ```text
@@ -111,6 +159,14 @@ yamactl [--profile NAME] [--zone main|zone2] [--json]
 | `yamactl volume up [--steps N]` | Increase by N × 0.5 dB |
 | `yamactl volume down [--steps N]` | Decrease by N × 0.5 dB |
 
+### Mute
+
+| Command | Description |
+| --- | --- |
+| `yamactl mute on` | Enable mute |
+| `yamactl mute off` | Disable mute |
+| `yamactl mute toggle` | Toggle mute state |
+
 ### Input & sound
 
 | Command | Description |
@@ -127,7 +183,8 @@ yamactl [--profile NAME] [--zone main|zone2] [--json]
 | --- | --- |
 | `yamactl tuner status` | Band, frequency, RDS |
 | `yamactl tuner band fm\|am` | Switch band |
-| `yamactl tuner freq <MHz>` | Set FM frequency |
+| `yamactl tuner fm <MHz>` | Set FM frequency in MHz (e.g. `87.50`) |
+| `yamactl tuner am <kHz>` | Set AM frequency in kHz (e.g. `810`) |
 | `yamactl tuner preset <N>` | Load preset |
 
 ### Net Radio
@@ -170,6 +227,59 @@ Use `--json` for machine-readable output on any read command. All log output goe
 | `20` | invalid input source |
 | `21` | operation unsupported by protocol |
 | `30` | unexpected receiver response |
+
+---
+
+## MCP Server
+
+yamaha-py ships a [Model Context Protocol](https://modelcontextprotocol.io) server that exposes all receiver controls as MCP tools, usable from any MCP-compatible AI client (Claude Desktop, Cursor, VS Code Copilot, etc.).
+
+```bash
+yamactl-mcp   # stdio transport — wire this up as an MCP server
+```
+
+### Claude Desktop (`claude_desktop_config.json`)
+
+```json
+{
+  "mcpServers": {
+    "yamactl": {
+      "command": "yamactl-mcp"
+    }
+  }
+}
+```
+
+### VS Code Copilot (`.vscode/mcp.json`)
+
+```json
+{
+  "servers": {
+    "yamactl": {
+      "command": "uv",
+      "args": ["run", "yamactl-mcp"]
+    }
+  }
+}
+```
+
+### Available MCP tools
+
+| Tool | Description |
+| --- | --- |
+| `get_receiver_status` | Full status (power, input, volume, mute, DSP) |
+| `set_power` | Power on / standby |
+| `get_volume` / `set_volume` | Read or set volume in dB |
+| `volume_up` / `volume_down` | Step volume up or down (0.5 dB/step) |
+| `get_mute` / `set_mute` / `toggle_mute` | Mute control |
+| `list_inputs` / `set_input` | Input source selection |
+| `load_scene` | Load a Yamaha scene preset (1–4) |
+| `get_tuner_status` | Tuner band, frequency, preset, RDS |
+| `set_tuner_band` / `set_tuner_fm_freq` / `set_tuner_am_freq` / `set_tuner_preset` | Tuner control |
+| `get_netradio_status` | Now-playing info |
+| `play_netradio_url` / `pause_netradio` / `stop_netradio` | Net radio / streaming playback |
+
+The server uses the default configured profile (`~/.config/yamaha-local/config.yaml`).
 
 ---
 

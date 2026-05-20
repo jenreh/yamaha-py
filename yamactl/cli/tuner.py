@@ -6,7 +6,7 @@ import json
 
 import typer
 
-from yamactl.cli._common import JsonOpt, ProfileOpt, make_service
+from yamactl.cli._common import JsonOpt, ProfileOpt, make_client
 from yamactl.output.rich_ui import render_tuner_status
 
 app = typer.Typer(no_args_is_help=True)
@@ -18,7 +18,7 @@ def tuner_status(
     json_output: JsonOpt = False,
 ) -> None:
     """Show tuner status (band, frequency, preset, RDS)."""
-    s = make_service(profile, None).get_tuner_status()
+    s = make_client(profile, None).get_tuner_status()
     if json_output:
         typer.echo(json.dumps(s.model_dump()))
     else:
@@ -35,7 +35,7 @@ def tuner_band(
     if b not in ("FM", "AM"):
         typer.echo(f"Error: band must be FM or AM, got '{band}'", err=True)
         raise typer.Exit(2)
-    make_service(profile, None).set_tuner_band(b)
+    make_client(profile, None).set_tuner_band(b)
     typer.echo(f"Tuner band: {b}")
 
 
@@ -45,7 +45,7 @@ def tuner_fm(
     profile: ProfileOpt = None,
 ) -> None:
     """Tune FM frequency in MHz."""
-    make_service(profile, None).set_tuner_fm_freq(freq)
+    make_client(profile, None).set_tuner_fm_freq(freq)
     typer.echo(f"Tuner FM: {freq:.2f} MHz")
 
 
@@ -55,7 +55,7 @@ def tuner_am(
     profile: ProfileOpt = None,
 ) -> None:
     """Tune AM frequency in kHz."""
-    make_service(profile, None).set_tuner_am_freq(freq)
+    make_client(profile, None).set_tuner_am_freq(freq)
     typer.echo(f"Tuner AM: {freq} kHz")
 
 
@@ -68,5 +68,5 @@ def tuner_preset(
     if preset < 1:
         typer.echo(f"Error: preset must be >= 1, got {preset}", err=True)
         raise typer.Exit(2)
-    make_service(profile, None).set_tuner_preset(preset)
+    make_client(profile, None).set_tuner_preset(preset)
     typer.echo(f"Tuner preset: {preset}")

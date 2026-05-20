@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import typer
 
-from yamactl.cli._common import ProfileOpt, ZoneOpt, make_service
+from yamactl.cli._common import ProfileOpt, ZoneOpt, make_client
 from yamactl.output.formatters import scene_confirmation
 
 app = typer.Typer(no_args_is_help=True)
@@ -20,5 +20,5 @@ def scene_load(
     if scene not in (1, 2, 3, 4):
         typer.echo(f"Error: scene must be 1–4, got {scene}", err=True)
         raise typer.Exit(2)
-    make_service(profile, zone).load_scene(scene)
+    make_client(profile, zone).load_scene(scene)
     typer.echo(scene_confirmation(scene))

@@ -6,7 +6,7 @@ import json
 
 import typer
 
-from yamactl.cli._common import JsonOpt, ProfileOpt, ZoneOpt, make_service
+from yamactl.cli._common import JsonOpt, ProfileOpt, ZoneOpt, make_client
 from yamactl.output.formatters import status_to_dict
 from yamactl.output.rich_ui import render_discovery, render_status
 
@@ -17,7 +17,7 @@ def status(
     json_output: JsonOpt = False,
 ) -> None:
     """Show full receiver status."""
-    result = make_service(profile, zone).get_status()
+    result = make_client(profile, zone).get_status()
     if json_output:
         typer.echo(json.dumps(status_to_dict(result), indent=2))
     else:

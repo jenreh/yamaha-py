@@ -6,7 +6,7 @@ import json
 
 import typer
 
-from yamactl.cli._common import JsonOpt, ProfileOpt, ZoneOpt, make_service
+from yamactl.cli._common import JsonOpt, ProfileOpt, ZoneOpt, make_client
 from yamactl.core.models import VOLUME_MAX, VOLUME_MIN
 from yamactl.output.formatters import volume_confirmation, volume_step_confirmation
 
@@ -20,7 +20,7 @@ def volume_get(
     json_output: JsonOpt = False,
 ) -> None:
     """Get current volume in dB."""
-    db = make_service(profile, zone).get_volume_db()
+    db = make_client(profile, zone).get_volume()
     if json_output:
         typer.echo(json.dumps({"volume_db": db}))
     else:
@@ -36,7 +36,7 @@ def volume_set(
     zone: ZoneOpt = None,
 ) -> None:
     """Set volume to an absolute dB value."""
-    make_service(profile, zone).set_volume_db(db)
+    make_client(profile, zone).set_volume(db)
     typer.echo(volume_confirmation(db))
 
 
@@ -47,7 +47,7 @@ def volume_up(
     zone: ZoneOpt = None,
 ) -> None:
     """Increase volume by N steps (1 step = 0.5 dB)."""
-    make_service(profile, zone).volume_up(steps)
+    make_client(profile, zone).volume_up(steps)
     typer.echo(volume_step_confirmation("up", steps))
 
 
@@ -58,5 +58,5 @@ def volume_down(
     zone: ZoneOpt = None,
 ) -> None:
     """Decrease volume by N steps (1 step = 0.5 dB)."""
-    make_service(profile, zone).volume_down(steps)
+    make_client(profile, zone).volume_down(steps)
     typer.echo(volume_step_confirmation("down", steps))

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import typer
 
-from yamactl.cli._common import ProfileOpt, ZoneOpt, make_service
+from yamactl.cli._common import ProfileOpt, ZoneOpt, make_client
 from yamactl.output.formatters import power_confirmation
 
 app = typer.Typer(no_args_is_help=True)
@@ -16,7 +16,7 @@ def power_on(
     zone: ZoneOpt = None,
 ) -> None:
     """Power on the receiver."""
-    make_service(profile, zone).set_power("on")
+    make_client(profile, zone).set_power("on")
     typer.echo(power_confirmation("on"))
 
 
@@ -26,5 +26,5 @@ def power_standby(
     zone: ZoneOpt = None,
 ) -> None:
     """Put receiver into standby."""
-    make_service(profile, zone).set_power("standby")
+    make_client(profile, zone).set_power("standby")
     typer.echo(power_confirmation("standby"))

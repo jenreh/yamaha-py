@@ -7,7 +7,7 @@ import json
 import typer
 from rich import print as rprint
 
-from yamactl.cli._common import JsonOpt, ProfileOpt, make_service
+from yamactl.cli._common import JsonOpt, ProfileOpt, make_client
 from yamactl.core.config import load_profile, save_profile
 from yamactl.output.rich_ui import render_netradio_status
 
@@ -22,12 +22,12 @@ def netradio_status(
     json_output: JsonOpt = False,
 ) -> None:
     """Show Net Radio / Server now-playing info."""
-    svc = make_service(profile, None)
-    receiver = svc.get_status()
+    client = make_client(profile, None)
+    receiver = client.get_status()
     if receiver.input == "SERVER":
-        s = svc.get_server_status()
+        s = client.get_server_status()
     else:
-        s = svc.get_netradio_status()
+        s = client.get_netradio_status()
     if json_output:
         typer.echo(json.dumps(s.model_dump()))
     else:
@@ -55,21 +55,21 @@ def netradio_play(
         )
         raise typer.Exit(2)
     save_profile(cfg.model_copy(update={"netradio_last": resolved}))
-    make_service(profile, None).play_netradio_url(url, resolved)
+    make_client(profile, None).play_netradio_url(url, resolved)
     typer.echo(f"Net Radio: playing '{resolved}'")
 
 
 @app.command("pause")
 def netradio_pause(profile: ProfileOpt = None) -> None:
     """Pause playback."""
-    make_service(profile, None).pause_netradio_url()
+    make_client(profile, None).pause_netradio_url()
     typer.echo("Net Radio: pause")
 
 
 @app.command("stop")
 def netradio_stop(profile: ProfileOpt = None) -> None:
     """Stop playback."""
-    make_service(profile, None).stop_netradio_url()
+    make_client(profile, None).stop_netradio_url()
     typer.echo("Net Radio: stop")
 
 

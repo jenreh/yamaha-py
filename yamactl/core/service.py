@@ -6,8 +6,6 @@ import time
 from collections.abc import Callable
 from typing import TypeVar
 
-_T = TypeVar("_T")
-
 from yamactl.core.config import load_profile
 from yamactl.core.errors import CommandTimeout, ReceiverUnavailable, YamaCtlError
 from yamactl.core.models import (
@@ -23,6 +21,8 @@ from yamactl.core.models import (
     ZoneName,
 )
 from yamactl.core.ports import ReceiverProtocol
+
+_T = TypeVar("_T")
 
 
 class ReceiverService:

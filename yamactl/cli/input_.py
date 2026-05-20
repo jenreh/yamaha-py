@@ -6,7 +6,7 @@ import json
 
 import typer
 
-from yamactl.cli._common import JsonOpt, ProfileOpt, ZoneOpt, make_service
+from yamactl.cli._common import JsonOpt, ProfileOpt, ZoneOpt, make_client
 from yamactl.output.formatters import input_confirmation
 from yamactl.output.rich_ui import render_inputs
 
@@ -20,7 +20,7 @@ def input_list(
     json_output: JsonOpt = False,
 ) -> None:
     """List available input sources."""
-    inputs = make_service(profile, zone).list_inputs()
+    inputs = make_client(profile, zone).list_inputs()
     if json_output:
         typer.echo(json.dumps({"inputs": inputs}))
     else:
@@ -34,5 +34,5 @@ def input_set(
     zone: ZoneOpt = None,
 ) -> None:
     """Select an input source."""
-    make_service(profile, zone).set_input(source)
+    make_client(profile, zone).set_input(source)
     typer.echo(input_confirmation(source))

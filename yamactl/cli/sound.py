@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import typer
 
-from yamactl.cli._common import ProfileOpt, ZoneOpt, make_service
+from yamactl.cli._common import ProfileOpt, ZoneOpt, make_client
 from yamactl.core.models import DSP_MODES
 from yamactl.output.formatters import (
     direct_confirmation,
@@ -37,7 +37,7 @@ def sound_mode(
             "Error: provide a mode name or use --list to see available modes.", err=True
         )
         raise typer.Exit(2)
-    make_service(profile, zone).set_dsp_mode(mode)
+    make_client(profile, zone).set_dsp_mode(mode)
     typer.echo(dsp_mode_confirmation(mode))
 
 
@@ -49,7 +49,7 @@ def sound_straight(
 ) -> None:
     """Enable or disable Straight mode (bypasses DSP)."""
     enabled = _parse_onoff(state, "straight")
-    make_service(profile, zone).set_straight(enabled)
+    make_client(profile, zone).set_straight(enabled)
     typer.echo(straight_confirmation(enabled))
 
 
@@ -61,7 +61,7 @@ def sound_direct(
 ) -> None:
     """Enable or disable Pure Direct mode."""
     enabled = _parse_onoff(state, "direct")
-    make_service(profile, zone).set_direct(enabled)
+    make_client(profile, zone).set_direct(enabled)
     typer.echo(direct_confirmation(enabled))
 
 
@@ -82,7 +82,7 @@ def sound_sleep(
             f"Error: sleep value must be a number or 'off', got '{value}'", err=True
         )
         raise typer.Exit(2)
-    make_service(profile, zone).set_sleep(minutes)
+    make_client(profile, zone).set_sleep(minutes)
     typer.echo(sleep_confirmation(value))
 
 
